@@ -7,6 +7,8 @@ const taskController = require('./controller/task.controller')
 
 
 const app = express();
+app.disable("x-powered-by");
+
 const port = process.env.PORT || 8001;
 
 app.use(bodyParser.json());
