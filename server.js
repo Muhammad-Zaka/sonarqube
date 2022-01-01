@@ -1,8 +1,39 @@
-var http = require('http');
+const express = require('express');
+const bodyParser = require('body-parser');
+require('dotenv').config()
 
-var server = http.createServer(function(req, res) {
-	res.writeHead(200, {'Content-Type': 'text/plain'});
-	res.end('SonarQube Working with Gitlab Actions and deploying code\n');
+const taskController = require('./controller/task.controller')
+
+
+
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(bodyParser.json());
+
+app.get('/api/tasks', (req, res) => {
+    taskController.getTasks().then(data => res.json(data));
 });
 
-server.listen(8081);
+app.post('/api/task', (req, res) => {
+    console.log(req.body);
+    taskController.createTask(req.body.task).then(data => res.json(data));
+});
+
+app.put('/api/task', (req, res) => {
+    taskController.updateTask(req.body.task).then(data => res.json(data));
+});
+
+app.delete('/api/task/:id', (req, res) => {
+    taskController.deleteTask(req.params.id).then(data => res.json(data));
+});
+
+app.get('/', (req, res) => {
+    res.send(`<h1>API Works !!!</h1>`)
+});
+
+
+
+app.listen(port, () => {
+    console.log(`Server listening on the port  ${port}`);
+})
