@@ -32,7 +32,7 @@ jobs:
         username: sonar-node
         key: ${{ secrets.PRIV_KEY }}
         port: 22
-        script:
+        script: |
           cd /home/sonar-node/sonarqube
           git reset --hard
           git pull origin main
