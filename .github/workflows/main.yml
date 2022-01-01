@@ -5,7 +5,7 @@ on:
       - main # or the name of your main branch
 jobs:
   build:
-    name: Build
+    name: sonar
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,7 +17,24 @@ jobs:
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       # If you wish to fail your job when the Quality Gate is red, uncomment the
       # following lines. This would typically be used to fail a deployment.
-      # - uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+  deploy-to-server:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: appleboy/ssh-action@master 
+      with:
+        host: 173.249.36.58
+        username: sonar-node
+        key: ${{ secrets.PRIV_KEY }}
+        port: 22
+        script:
+          git clone https://github.com/Tomas-R/website.git
+          cd /home/sonar-node/sonarqube
+          git reset --hard
+          git pull origin main
+          npm install
+          pm2 reload sonar-test
